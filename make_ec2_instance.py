@@ -55,7 +55,11 @@ def create_ec2_instance(name):
             },
         ]
     )
-    return instances.get("Instances", [])[0]
+    # Retrieve "Instances" and if its not available, provide a fallback empty array
+    instances = instances.get("Instances", [])
+    if len(instances):
+        return instances[0]
+    return None
 
 
 def lets_see_security_groups():
