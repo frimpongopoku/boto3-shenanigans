@@ -21,3 +21,8 @@ def create_session():
         region_name=AWS_REGION
     )
     return session
+
+
+def create_client(resource):
+    session = create_session()
+    return session.client(resource)
