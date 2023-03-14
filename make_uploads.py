@@ -2,7 +2,6 @@ import boto3
 import os
 import time
 from dotenv import load_dotenv
-
 from utils import create_session
 load_dotenv()
 

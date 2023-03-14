@@ -10,6 +10,8 @@ AWS_REGION = os.getenv("AWS_REGION")
 AWS_SESSION_TOKEN = os.getenv("AWS_SESSION_TOKEN")
 BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
+STUDENT_ID = "s2023351"
+
 
 def create_session():
     session = boto3.Session(
