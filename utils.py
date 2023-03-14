@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 import boto3
 import os
+import json
 
 load_dotenv()
 
@@ -26,3 +27,10 @@ def create_session():
 def create_client(resource):
     session = create_session()
     return session.client(resource)
+
+
+def load_json(file_name):
+    data = {}
+    with open(file_name, 'r') as f:
+        data = json.load(f)
+    return data

@@ -6,10 +6,6 @@ INSTANCE_NAME = "pongos_assignment_ec2_" + STUDENT_ID
 
 SESSION = create_session()
 EC2_CLIENT = SESSION.client('ec2')
-# EC2_RESOURCE = SESSION.resource('ec2')
-
-
-# Use the default VPC and subnets
 
 
 def instance_exists(name):
