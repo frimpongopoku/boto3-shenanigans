@@ -40,7 +40,7 @@ def generate_lambda_functions(**kwargs):
     Then we  set it to be triggered by the SQS we know exists already
 
     Then now we go ahead and create the lambda function for emailing
-    Then we set it to be triggered by the dynamo db entry, and thats all.
+    Then we set it to be triggered by the dynamo db entry, and that's all.
 
     :return:
     """
@@ -52,18 +52,18 @@ def generate_lambda_functions(**kwargs):
                                            formation_client=formation_client)
     zips_uploaded = upload_zipped_lambdas(s3_client, u_bucket.name)
     if not zips_uploaded:
-        print("For some reason we could not upload zipped lambda functions, check logs...")
-        return False
+        print("For some reason we could not upload zipped lambda functions, please check logs...")
+        return None, None
 
     # Now we create dynamo entry lambda
     # ----------------------------------
     code_source = {'S3Bucket': u_bucket.name, 'S3Key': DYNAMO_LAMBDA_ZIPPED_FILE_NAME}
-    dyno_lambda_response = create_lambda_function(function_name=DYNAMO_ENTRY_FUNCTION_NAME, role=LAB_ROLE_ARN,
-                                                  code_source=code_source)
+    dyno_lambda_arn = create_lambda_function(function_name=DYNAMO_ENTRY_FUNCTION_NAME, role=LAB_ROLE_ARN,
+                                             code_source=code_source)
 
     # Now we create emailing lambda
     # ----------------------------------
     code_source["S3Key"] = EMAILING_LAMBDA_ZIPPED_FILE_NAME
-    email_lambda_response = create_lambda_function(function_name=EMAILING_FUNCTION_NAME, role=LAB_ROLE_ARN,
-                                                   code_source=code_source)
-    return dyno_lambda_response["FunctionArn"], email_lambda_response["FunctionArn"]
+    email_lambda_arn = create_lambda_function(function_name=EMAILING_FUNCTION_NAME, role=LAB_ROLE_ARN,
+                                              code_source=code_source)
+    return dyno_lambda_arn, email_lambda_arn
