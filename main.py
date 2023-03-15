@@ -20,7 +20,7 @@ if __name__ == '__main__':
     arn, url = create_queue(client=client, name=QUEUE_NAME)
     print("QUEUE ARN, URL ", arn, url)
     sqs_client = SESSION.client("sqs")
-    create_trigger_relationship_with_queue(bucket_arn, BUCKET_NAME, arn, url, s3_resource=resource, client=sqs_client)
+    create_trigger_relationship_with_queue(BUCKET_NAME, arn, url, s3_resource=resource, client=sqs_client)
     # ---------------------------------------------------------------------------------
     # ------------------------------TEST BUCKET CREATION------------------------------
     # client = SESSION.client("s3")

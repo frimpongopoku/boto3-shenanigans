@@ -14,14 +14,14 @@ def queue_exists(**kwargs):
     name = kwargs.get("name", None)
     if not name:
         print("Please provide a name for the queue...")
-        return False, None
+        return False, None, None
     client = kwargs.get("client", create_client("sqs"))
     try:
         response = client.get_queue_url(QueueName=name)
         queue_url = response["QueueUrl"]
         return True, get_arn_with_url(client, queue_url), queue_url
     except client.exceptions.QueueDoesNotExist:
-        return False, None
+        return False, None, None
 
 
 def create_queue(**kwargs):
@@ -37,13 +37,12 @@ def create_queue(**kwargs):
     return get_arn_with_url(client, queue_url), queue_url
 
 
-def give_bucket_permission_to_notify(bucket_arn, queue_url, **kwargs):
+def give_bucket_permission_to_notify(bucket_name, queue_url, queue_arn, **kwargs):
     client = kwargs.get("client", create_client("sqs"))
     s3_client = kwargs.get("s3_client", create_client("s3"))
-    bucket_name = kwargs.get("bucket_name")
     q_policy = {
         "Version": "2012-10-17",
-        "Id": "pongossqspolicyid",
+        "Id": "New-Allowing-Policy",
         "Statement": [
             {
                 "Sid": "Allow-S3-Bucket-Send-Message",
@@ -52,7 +51,7 @@ def give_bucket_permission_to_notify(bucket_arn, queue_url, **kwargs):
                     "AWS": "*"
                 },
                 "Action": "sqs:SendMessage",
-                "Resource": queue_url,
+                "Resource": queue_arn,
                 "Condition": {
 
                     "ArnLike": {
@@ -62,6 +61,7 @@ def give_bucket_permission_to_notify(bucket_arn, queue_url, **kwargs):
             }
         ]
     }
+
     q_p_response = client.set_queue_attributes(
         QueueUrl=queue_url,
         Attributes={

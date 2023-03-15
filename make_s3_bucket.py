@@ -51,41 +51,27 @@ def create_bucket_from_template(**kwargs):
     return None
 
 
-def create_trigger_relationship_with_queue(bucket_arn, bucket_name, queue_arn, queue_url, **kwargs):
+def create_trigger_relationship_with_queue(bucket_name, queue_arn, queue_url, **kwargs):
     """
     Creates the relationship between a given s3 bucket, and a queue that should be triggered
     when a new item is uploaded
     :param queue_url:
-    :param bucket_arn:
     :param bucket_name:
     :param queue_arn:
     :param kwargs:
     :return:
     """
-    s3_resource = kwargs.get("s3_resource", create_resource("s3"))
     s3_client = kwargs.get("s3_client", create_client("s3"))
     sqs_client = kwargs.get("client")  # sqs client
-    # notification = s3_resource.BucketNotification(bucket_name)
-    res = give_bucket_permission_to_notify(bucket_arn, queue_url, client=sqs_client, s3_client=s3_client,
-                                           bucket_name=bucket_name)
-    print("UPDATING POLICY RESPONSE ", res)
-    print("Lets just see Queue ARN Again", queue_arn)
-    config = {"QueueConfigurations": [{
-        'QueueArn': queue_arn,
-        'Events': ['s3:ObjectCreated:*']
-    }]}
+    give_bucket_permission_to_notify(bucket_name, queue_url, queue_arn, client=sqs_client, s3_client=s3_client)
+    config = {"QueueConfigurations": [{'QueueArn': queue_arn, 'Events': ['s3:ObjectCreated:*']}]}
     try:
         response = s3_client.put_bucket_notification_configuration(
             Bucket=bucket_name,
             NotificationConfiguration=config
         )
-        print(f"Notification configuration set for bucket {bucket_name}. Response: {response}")
+        print(f"Awesome! Your queue will now receive notifications when items are uploaded into '{bucket_name}'.")
         return response
     except Exception as e:
         print(f"An error occurred while setting up the bucket notification configuration: {e}")
         return None
-
-    # response = s3_client.put_bucket_notification_configuration(Bucket=bucket_name, NotificationConfiguration=config)
-
-    # print.log("RELATIONSHIP SETUP RESPONSE", response)
-    # return response
