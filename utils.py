@@ -1,3 +1,5 @@
+import time
+
 from dotenv import load_dotenv
 import boto3
 import os
@@ -12,6 +14,7 @@ AWS_SESSION_TOKEN = os.getenv("AWS_SESSION_TOKEN")
 BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 STUDENT_ID = "s2023351"
+LAB_ROLE_ARN = "arn:aws:iam::122802082660:role/LabRole"
 
 
 def create_session():
@@ -39,3 +42,22 @@ def load_json(file_name):
     with open(file_name, 'r') as f:
         data = json.load(f)
     return data
+
+
+def create_stack(**kwargs):
+    stack_name = kwargs.get("stack_name", "pongos-new-stack-" + str(int(time.time())))
+    formation_client = kwargs.get("formation_client") or create_client("cloudformation")
+    template = kwargs.get("template")
+    if not template:
+        print("Please provide a JSON cloud formation template to create your stack... :(")
+
+    print(f"Currently creating stack '{stack_name}'...")
+    stack_response = formation_client.create_stack(
+        StackName=stack_name,
+        TemplateBody=json.dumps(template)
+    )
+    stack_id = stack_response.get('StackId')
+    formation_client.get_waiter('stack_create_complete').wait(
+        StackName=stack_id)  # We wait for the stack to be created before moving on
+    print(f"Stack created with ID '{stack_id}'...")
+    return stack_id
