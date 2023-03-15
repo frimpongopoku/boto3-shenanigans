@@ -24,9 +24,14 @@ def create_session():
     return session
 
 
-def create_client(resource):
+def create_client(name):
     session = create_session()
-    return session.client(resource)
+    return session.client(name)
+
+
+def create_resource(resource):
+    session = create_session()
+    return session.resource(resource)
 
 
 def load_json(file_name):
