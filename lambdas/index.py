@@ -61,12 +61,9 @@ def generate_lambda_functions(**kwargs):
     dyno_lambda_response = create_lambda_function(function_name=DYNAMO_ENTRY_FUNCTION_NAME, role=LAB_ROLE_ARN,
                                                   code_source=code_source)
 
-    print("HEre is teh dynamo lambda response", dyno_lambda_response)
-
     # Now we create emailing lambda
     # ----------------------------------
     code_source["S3Key"] = EMAILING_LAMBDA_ZIPPED_FILE_NAME
     email_lambda_response = create_lambda_function(function_name=EMAILING_FUNCTION_NAME, role=LAB_ROLE_ARN,
                                                    code_source=code_source)
-
-    print("HEre is the emailing lambda response", email_lambda_response)
+    return dyno_lambda_response["FunctionArn"], email_lambda_response["FunctionArn"]

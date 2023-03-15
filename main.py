@@ -8,4 +8,5 @@ from utils import create_session, AWS_REGION, load_json
 
 SESSION = create_session()
 if __name__ == '__main__':
-    generate_lambda_functions(session=SESSION)
+    response = generate_lambda_functions(session=SESSION)
+    print("LOVELY ARN RESPONSES", response)
