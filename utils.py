@@ -61,3 +61,4 @@ def create_stack(**kwargs):
         StackName=stack_id)  # We wait for the stack to be created before moving on
     print(f"Stack created with ID '{stack_id}'...")
     return stack_id
+
