@@ -48,7 +48,7 @@ def give_bucket_permission_to_notify(bucket_name, queue_url, queue_arn, **kwargs
                 "Sid": "Allow-S3-Bucket-Send-Message",
                 "Effect": "Allow",
                 "Principal": {
-                    "AWS": "*"
+                    "Service": "s3.amazonaws.com"
                 },
                 "Action": "sqs:SendMessage",
                 "Resource": queue_arn,

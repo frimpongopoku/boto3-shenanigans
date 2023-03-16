@@ -26,7 +26,7 @@ def create_lambda_function(**kwargs):
         FunctionName=function_name,
         Runtime='python3.8',
         Role=role,
-        Handler= handler_name or 'lambda_function.lambda_handler',
+        Handler=handler_name or 'lambda_function.lambda_handler',
         Code=code_source
     )
     return response["FunctionArn"]
@@ -35,23 +35,29 @@ def create_lambda_function(**kwargs):
 def event_source_mapping_exists(queue_arn, function_name, client):
     response = client.list_event_source_mappings(FunctionName=function_name)
     arns = [mapping["EventSourceArn"] for mapping in response["EventSourceMappings"]]
-    print("Here ar the ARNS", arns)
     return queue_arn in arns
 
 
-def create_lambda_trigger_from_sqs(queue_arn, function_name, **kwargs):
+def create_event_source_mapping(arn, function_name, **kwargs):
     client = kwargs.get("client", create_client("lambda"))
-    it_exists = event_source_mapping_exists(queue_arn, function_name, client)
+    options = kwargs.get("options",{})
+    it_exists = event_source_mapping_exists(arn, function_name, client)
+    print("Here is the ARN", arn)
     if it_exists:
         print(
-            f"The source mapping between function '{function_name}' and queue with arn = '{queue_arn}' already exists :)")
+            f"The source mapping between function '{function_name}' and queue with arn = '{arn}' already exists :)")
         return True
     client.create_event_source_mapping(
-        EventSourceArn=queue_arn,
+        EventSourceArn=arn,
         FunctionName=function_name,
         BatchSize=10,  # Adjust the batch size as needed
-        Enabled=True
+        Enabled=True,
+        **options
     )
     print(
-        f"Created source mapping between function '{function_name}' and queue with arn = '{queue_arn}'!")
+        f"Created source mapping between function '{function_name}' and entity with arn = '{arn}'!")
     return True
+
+
+def create_lambda_trigger_from_sqs(queue_arn, function_name, **kwargs):
+    create_event_source_mapping(queue_arn, function_name, **kwargs) # TODO: remove this entire function later, no need for this
