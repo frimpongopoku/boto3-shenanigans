@@ -3,6 +3,7 @@ from lambdas.lambda_utils import create_lambda_trigger_from_sqs, create_event_so
 from make_dynamo_db import create_table_from_template, TABLE_NAME, enable_streaming_on_dyno_table
 from make_ec2_instance import lets_see_security_groups, create_ec2_instance, INSTANCE_NAME
 from make_s3_bucket import BUCKET_NAME, create_bucket_from_template, create_trigger_relationship_with_queue
+from make_sns_topic import TOPIC_NAME, create_sns_topic, subscribe_emails_to_topic, EMAIL_LIST
 from make_sqs_queue import create_queue, QUEUE_NAME
 from make_uploads import upload_images
 from utils import create_session, AWS_REGION, load_json
@@ -66,6 +67,17 @@ def test_creating_trigger_for_emailing_lambda():
     print("LOVELY TRIGGER VICTORY: ", response)
 
 
+def test_creating_sns_topic():
+    client = SESSION.client("sns")
+    arn = create_sns_topic(TOPIC_NAME, client=client)
+
+    print("GREAT TOPIC ARN: ", arn)
+
+    response = subscribe_emails_to_topic(EMAIL_LIST, arn, client=client)
+    if response:
+        print("All emails subscribed!")
+
+
 if __name__ == '__main__':
     # test_lambda_creation()
     # ---------- Test Notification to SQS Relationship ---------
@@ -85,4 +97,5 @@ if __name__ == '__main__':
 
     # test_enabling_table_streaming()
 
-    test_creating_trigger_for_emailing_lambda()
+    # test_creating_trigger_for_emailing_lambda()
+    test_creating_sns_topic()
