@@ -24,8 +24,8 @@ def queue_exists(**kwargs):
         return False, None, None
 
 
-def create_queue(**kwargs):
-    name = kwargs.get("name", None)
+def create_queue(name, **kwargs):
+    # name = kwargs.get("name", None)
     client = kwargs.get("client", create_client("sqs"))
     it_exists, arn, url = queue_exists(name=name, client=client)
     if it_exists:

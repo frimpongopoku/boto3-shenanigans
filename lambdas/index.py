@@ -9,10 +9,12 @@ TEMPLATE_PATH = "templates/create_my_utility_bucket.json"  # Relative to root fo
 FOLDER_CONTAINING_ZIPS = "./lambdas/zips"
 
 DYNAMO_ENTRY_FUNCTION_NAME = "functionToCreateItemsInDynamoDB"
-DYNAMO_LAMBDA_ZIPPED_FILE_NAME = "dynamo_entry_lambda.zip"
+DYNAMO_LAMBDA_ZIPPED_FILE_NAME = "dynamo_entry_function.py.zip"
+DYNAMO_HANDLER_NAME = "dynamo_entry_function.lambda_handler"
 
 EMAILING_FUNCTION_NAME = "functionToEmailIfPassengerExists"
-EMAILING_LAMBDA_ZIPPED_FILE_NAME = "emailing_lambda.zip"
+EMAILING_LAMBDA_ZIPPED_FILE_NAME = "emailing_function.py.zip"
+EMAILING_LAMBDA_HANDLER_NAME = "emailing_function.lambda_handler"
 
 
 def upload_zipped_lambdas(s3_client, bucket_name):
@@ -48,22 +50,22 @@ def generate_lambda_functions(**kwargs):
     s3_client = session.client("s3")
     formation_client = session.client("cloudformation")
     template = load_json(TEMPLATE_PATH)
-    u_bucket = create_bucket_from_template(template=template, client=s3_client, bucket_name=U_BUCKET_NAME,
-                                           formation_client=formation_client)
-    zips_uploaded = upload_zipped_lambdas(s3_client, u_bucket.name)
+    u_bucket_arn = create_bucket_from_template(template=template, client=s3_client, bucket_name=U_BUCKET_NAME,
+                                               formation_client=formation_client)
+    zips_uploaded = upload_zipped_lambdas(s3_client, U_BUCKET_NAME)
     if not zips_uploaded:
         print("For some reason we could not upload zipped lambda functions, please check logs...")
         return None, None
 
     # Now we create dynamo entry lambda
     # ----------------------------------
-    code_source = {'S3Bucket': u_bucket.name, 'S3Key': DYNAMO_LAMBDA_ZIPPED_FILE_NAME}
+    code_source = {'S3Bucket': U_BUCKET_NAME, 'S3Key': DYNAMO_LAMBDA_ZIPPED_FILE_NAME}
     dyno_lambda_arn = create_lambda_function(function_name=DYNAMO_ENTRY_FUNCTION_NAME, role=LAB_ROLE_ARN,
-                                             code_source=code_source)
+                                             code_source=code_source, handler_name=DYNAMO_HANDLER_NAME)
 
     # Now we create emailing lambda
     # ----------------------------------
     code_source["S3Key"] = EMAILING_LAMBDA_ZIPPED_FILE_NAME
     email_lambda_arn = create_lambda_function(function_name=EMAILING_FUNCTION_NAME, role=LAB_ROLE_ARN,
-                                              code_source=code_source)
+                                              code_source=code_source, handler_name=EMAILING_LAMBDA_HANDLER_NAME)
     return dyno_lambda_arn, email_lambda_arn
