@@ -2,7 +2,7 @@ import time
 
 from utils import create_client, create_stack, STUDENT_ID
 
-TABLE_NAME = "pongosdynamotables2023351"
+TABLE_NAME = "pongosdynamotables2023351" # Change this value too in dynamo entry lambda if its ever changed
 
 
 def table_exists(**kwargs):
@@ -15,9 +15,9 @@ def table_exists(**kwargs):
         return False, name
 
 
-def create_table_from_template(**kwargs):
-    table_name = kwargs.get("table_name")
-    table_template = kwargs.get("template")
+def create_table_from_template(table_template, table_name,**kwargs):
+    # table_name = kwargs.get("table_name")
+    # table_template = kwargs.get("template")
     client = kwargs.get("client", create_client("dynamodb"))
     formation_client = kwargs.get("formation_client")
 

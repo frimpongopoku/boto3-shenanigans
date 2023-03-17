@@ -37,12 +37,11 @@ def upload_zipped_lambdas(s3_client, bucket_name):
 def generate_lambda_functions(**kwargs):
     """
     1. We need to create the utility bucket if it doesnt exist, if it does we ignore
-    2. Then upload the corresponding lambda zip files into that bucket (doesnt matter if its there or not, we should upload everytime)
-    And then we create the lambda function for dynamo entry
-    Then we  set it to be triggered by the SQS we know exists already
+    2. Then upload the corresponding lambda zip files into that bucket (doesnt matter if its there or not, we should upload/overwrite everytime)
+    3. And then we create the lambda function1 - for dynamo entry
 
-    Then now we go ahead and create the lambda function for emailing
-    Then we set it to be triggered by the dynamo db entry, and that's all.
+    4. Then now we go ahead and create  lambda function2 - for emailing
+    5. Then we set it to be triggered by the dynamo db entry, and that's all.
 
     :return:
     """
@@ -50,8 +49,8 @@ def generate_lambda_functions(**kwargs):
     s3_client = session.client("s3")
     formation_client = session.client("cloudformation")
     template = load_json(TEMPLATE_PATH)
-    u_bucket_arn = create_bucket_from_template(template=template, client=s3_client, bucket_name=U_BUCKET_NAME,
-                                               formation_client=formation_client)
+    create_bucket_from_template(template=template, client=s3_client, bucket_name=U_BUCKET_NAME,
+                                formation_client=formation_client)
     zips_uploaded = upload_zipped_lambdas(s3_client, U_BUCKET_NAME)
     if not zips_uploaded:
         print("For some reason we could not upload zipped lambda functions, please check logs...")

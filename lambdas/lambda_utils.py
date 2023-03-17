@@ -60,4 +60,4 @@ def create_event_source_mapping(arn, function_name, **kwargs):
 
 
 def create_lambda_trigger_from_sqs(queue_arn, function_name, **kwargs):
-    create_event_source_mapping(queue_arn, function_name, **kwargs) # TODO: remove this entire function later, no need for this
+    return create_event_source_mapping(queue_arn, function_name, **kwargs) # TODO: remove this entire function later, no need for this

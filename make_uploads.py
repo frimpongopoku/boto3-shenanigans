@@ -1,32 +1,23 @@
-import boto3
 import os
 import time
-from dotenv import load_dotenv
-from utils import create_session
-load_dotenv()
+from utils import create_client
 
-BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
-SESSION = create_session()
-SECONDS_TO_WAIT = 15
-# Set the directory containing the images to be uploaded
-DIRECTORY = '/Users/PongoALU/Documents/CPD/images'
-
-# Initialize the S3 client
-S3 = SESSION.client('s3')
+SECONDS_TO_WAIT = 15  # TODO: change this to 30 before submission
 
 
-def upload_images():
+def upload_images(bucket_name, **kwargs):
+    client = kwargs.get("client", create_client("s3"))
+    directory = kwargs.get("directory")
     # Loop through each file in the directory
-    for filename in os.listdir(DIRECTORY):
+    for filename in os.listdir(directory):
         print("Current File: ", filename)
         # Construct the full path to the file
-        filepath = os.path.join(DIRECTORY, filename)
+        filepath = os.path.join(directory, filename)
 
         # Wait for 30 seconds before uploading the file
         time.sleep(SECONDS_TO_WAIT)
 
         # Upload the file to the S3 bucket
         with open(filepath, 'rb') as f:
-            S3.upload_fileobj(f, BUCKET_NAME, filename)
-
+            client.upload_fileobj(f, bucket_name, filename)
         print(f"{filename} uploaded to S3")

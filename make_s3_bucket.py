@@ -27,13 +27,13 @@ def bucket_exists(**kwargs):
     return is_in, name
 
 
-def create_bucket_from_template(**kwargs):
-    bucket_template = kwargs.get("template")
-    bucket_name = kwargs.get("bucket_name")
+def create_bucket_from_template(bucket_template, bucket_name, **kwargs):
+    # bucket_template = kwargs.get("template")
+    # bucket_name = kwargs.get("bucket_name")
     stack_name = f"pongos-new-s3-stack-{str(int(time.time()))}-{STUDENT_ID}"
     formation_client = kwargs.get("formation_client")
     s3_client = kwargs.get("client", create_client("s3"))
-    s3_resource = create_resource("s3")
+    # s3_resource = create_resource("s3")
 
     it_exists, bucket = bucket_exists(bucket_name=bucket_name, client=s3_client)
     if it_exists:
