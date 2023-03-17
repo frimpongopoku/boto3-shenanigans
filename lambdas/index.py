@@ -49,7 +49,7 @@ def generate_lambda_functions(**kwargs):
     s3_client = session.client("s3")
     formation_client = session.client("cloudformation")
     template = load_json(TEMPLATE_PATH)
-    create_bucket_from_template(template=template, client=s3_client, bucket_name=U_BUCKET_NAME,
+    create_bucket_from_template(template, U_BUCKET_NAME, client=s3_client,
                                 formation_client=formation_client)
     zips_uploaded = upload_zipped_lambdas(s3_client, U_BUCKET_NAME)
     if not zips_uploaded:

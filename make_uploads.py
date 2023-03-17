@@ -2,7 +2,7 @@ import os
 import time
 from utils import create_client
 
-SECONDS_TO_WAIT = 15  # TODO: change this to 30 before submission
+SECONDS_TO_WAIT = 30  # TODO: change this to 30 before submission
 
 
 def upload_images(bucket_name, **kwargs):
