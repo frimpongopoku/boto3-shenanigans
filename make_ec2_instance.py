@@ -15,7 +15,7 @@ def instance_exists(name):
     return len(instances) > 0, instances
 
 
-AMI_IMAGE_ID = 'ami-0a887e401f7654935'  # Amazon Linux 2 AMI (HVM)
+AMI_IMAGE_ID = 'ami-02f3f602d23f1659d'  # Amazon Linux 2023 AMI
 
 DEFAULT_SECURITY_GROUP = "sg-088883dca8b60ae8a"
 
@@ -58,8 +58,9 @@ def create_ec2_instance(name):
     return None
 
 
-def lets_see_security_groups():
-    response = EC2_CLIENT.describe_security_groups()
+def lets_see_security_groups(client=None):
+    client = client or EC2_CLIENT
+    response = client.describe_security_groups()
 
     # print security group IDs
     for group in response['SecurityGroups']:
