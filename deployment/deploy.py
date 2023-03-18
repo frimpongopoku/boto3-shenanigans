@@ -2,40 +2,10 @@ import boto3
 
 from utils import create_session, LAB_ROLE_ARN
 
+ZIPPED_FOLDER_NAME = "dummy.py.zip"
+SOURCE_CODE_ZIP_IN_BUCKET = f"s3://pongosutilitybuckets2023351/{ZIPPED_FOLDER_NAME}"
 LAB_ROLE_PROFILE_ARN = "arn:aws:iam::122802082660:instance-profile/LabInstanceProfile"
-CODE_EXTRACT = '''
-import boto3
 
-from utils import create_session
-
-# SESSION = create_session() # change this before deployment
-SESSION = boto3.Session()
-EC2 = SESSION.client("ec2")
-
-
-def run():
-    response = EC2.describe_security_groups()
-    print("--------------- WE ARE ABOUT TO DO YOUR LISTING -------------")
-    # print security group IDs
-    for group in response['SecurityGroups']:
-        print(group['GroupName'], group['GroupId'])
-
-
-def start():
-    inp = input("Choose An Option \nA. List Security Groups \nB. Quit Application\n>")
-    val = inp.lower()
-    if val == "a":
-        run()
-        start()
-    elif val == "b":
-        exit()
-    else:
-        start()
-
-
-start()
-
-'''
 region_name="us-east-1"
 # --------------------------------------------------------------------------------------------------------
 # Set up EC2 resource
@@ -81,9 +51,11 @@ instance = ec2.create_instances(ImageId=AMI_IMAGE_ID,
                                 SecurityGroupIds=[security_group.id],
                                 IamInstanceProfile={'Arn': LAB_ROLE_PROFILE_ARN},
                                 UserData=f'''#!/bin/bash
-                                            sudo apt-get update
-                                            sudo apt-get install -y python3-pip
-                                            echo '{CODE_EXTRACT}' > dummy.py
+                                            sudo yum update
+                                            sudo yum -y install python3-pip awscli
+                                            sudo pip install boto3
+                                            aws s3 cp {SOURCE_CODE_ZIP_IN_BUCKET} .
+                                            unzip {ZIPPED_FOLDER_NAME}
                                             sudo python3 dummy.py &
                                             '''
                                 , TagSpecifications=[
@@ -95,5 +67,5 @@ instance.wait_until_running()
 
 # Get the public DNS name of the instance
 instance_dns = instance.public_dns_name
-print("SEE HERE", instance_dns)
+print("SEE HERE", instance)
 print('Your Python application is running at:', instance_dns)

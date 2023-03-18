@@ -1,9 +1,9 @@
 import boto3
 
-from utils import create_session
+# from utils import create_session
 
 # SESSION = create_session() # change this before deployment
-SESSION = boto3.Session()
+SESSION = boto3.Session(region_name="us-east-1")
 EC2 = SESSION.client("ec2")
 
 
