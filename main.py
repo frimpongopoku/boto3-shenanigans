@@ -1,7 +1,8 @@
 from lambdas.index import generate_lambda_functions, DYNAMO_ENTRY_FUNCTION_NAME, EMAILING_FUNCTION_NAME
 from lambdas.lambda_utils import create_lambda_trigger_from_sqs, create_event_source_mapping
-from make_dynamo_db import create_table_from_template, TABLE_NAME, enable_streaming_on_dyno_table
-from make_s3_bucket import BUCKET_NAME, create_bucket_from_template, create_trigger_relationship_with_queue
+from make_dynamo_db import create_table_from_template, TABLE_NAME, enable_streaming_on_dyno_table, empty_database_table
+from make_s3_bucket import BUCKET_NAME, create_bucket_from_template, create_trigger_relationship_with_queue, \
+    empty_bucket
 from make_sns_topic import TOPIC_NAME, create_sns_topic, subscribe_emails_to_topic, EMAIL_LIST
 from make_sqs_queue import create_queue, QUEUE_NAME
 from make_uploads import upload_images
@@ -51,7 +52,7 @@ def make_sns_topic_and_subscribe_emails():
     arn = create_sns_topic(TOPIC_NAME, client=SNS)
     response = subscribe_emails_to_topic(EMAIL_LIST, arn, client=SNS)
     if response:
-        print(f"All emails subscribed to the topic {arn}!")
+        print(f"[+]All emails subscribed to the topic {arn}!")
 
 
 def run_all_steps():
@@ -78,6 +79,17 @@ def run_all_steps():
     upload_images(BUCKET_NAME, client=S3, directory=DIRECTORY)
 
 
+def reset_application():
+    bucket_emptied = empty_bucket(BUCKET_NAME, S3)
+    table_emptied = empty_database_table(TABLE_NAME, DYNAMO)
+
+    if bucket_emptied:
+        print(f"[+]Bucket '{BUCKET_NAME}' is emptied....")
+    if table_emptied:
+        print(f"[+]Table '{TABLE_NAME}' is emptied....")
+        return bucket_emptied and table_emptied
+
+
 def start_application():
     print("-----------------------------------------------------------------------------")
     print(f"AUTHOR: FRIMPONG OPOKU AGYEMANG ({STUDENT_ID}) ")
@@ -88,7 +100,11 @@ def start_application():
 
     option = option.lower()
     if option == "a":
-        run_all_steps()
+        is_fresh_plate = reset_application()
+        if is_fresh_plate:
+            run_all_steps()
+        else:
+            print("[+] Sorry, it looks like app could not be reset... (Check Error Logs)")
         start_application()
     elif option == "b":
         exit()

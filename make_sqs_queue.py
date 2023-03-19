@@ -13,7 +13,7 @@ def get_arn_with_url(client, url):
 def queue_exists(**kwargs):
     name = kwargs.get("name", None)
     if not name:
-        print("Please provide a name for the queue...")
+        print("[-]Please provide a name for the queue...")
         return False, None, None
     client = kwargs.get("client", create_client("sqs"))
     try:
@@ -29,11 +29,11 @@ def create_queue(name, **kwargs):
     client = kwargs.get("client", create_client("sqs"))
     it_exists, arn, url = queue_exists(name=name, client=client)
     if it_exists:
-        print("Queue already exists, here you go :)")
+        print("[+]Queue already exists, here you go :)")
         return arn, url
     response = client.create_queue(QueueName=name)
     queue_url = response['QueueUrl']
-    print(f"Queue {name} created with URL: {queue_url}")
+    print(f"[+]Queue {name} created with URL: {queue_url}")
     return get_arn_with_url(client, queue_url), queue_url
 
 

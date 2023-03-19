@@ -7,6 +7,20 @@ from utils import create_client, create_resource, create_stack, STUDENT_ID
 BUCKET_NAME = "pongoss3buckets2023351"
 
 
+def empty_bucket(bucket_name, client):
+    exists, _ = bucket_exists(bucket_name, client)
+    if not exists:
+        return True
+    response = client.list_objects_v2(Bucket=bucket_name)
+    # Check if there are any objects
+    if "Contents" not in response:
+        print("[+]The bucket is already empty.")
+        return True
+    for obj in response["Contents"]:
+        client.delete_object(Bucket=bucket_name, Key=obj["Key"])
+    return True
+
+
 def get_bucket_arn(bucket_name, **kwargs):
     client = kwargs.get("client")
     sts = kwargs.get("sts_client", create_client("sts"))
@@ -17,37 +31,27 @@ def get_bucket_arn(bucket_name, **kwargs):
     return bucket_arn
 
 
-def bucket_exists(**kwargs):
-    name = kwargs.get("bucket_name", None)
-    client = kwargs.get("client", None) or create_client("s3")
+def bucket_exists(name, client):
     result = client.list_buckets()
     buckets = [bucket['Name'] for bucket in result['Buckets']]
-    print("BUCKETS", buckets)
     is_in = name in buckets
     return is_in, name
 
 
 def create_bucket_from_template(bucket_template, bucket_name, **kwargs):
-    # bucket_template = kwargs.get("template")
-    # bucket_name = kwargs.get("bucket_name")
     stack_name = f"pongos-new-s3-stack-{str(int(time.time()))}-{STUDENT_ID}"
     formation_client = kwargs.get("formation_client")
     s3_client = kwargs.get("client", create_client("s3"))
-    # s3_resource = create_resource("s3")
 
-    it_exists, bucket = bucket_exists(bucket_name=bucket_name, client=s3_client)
+    it_exists, bucket = bucket_exists(bucket_name, s3_client)
     if it_exists:
-        print(f"The bucket with name '{bucket}' already exists, here you go!")
-        # return s3_resource.Bucket(bucket).arn
+        print(f"[+]The bucket with name '{bucket}' already exists, here you go!")
         return get_bucket_arn(bucket_name, client=s3_client)
-        # return f"arn:aws:s3:::{bucket_name}"
 
     stack_id = create_stack(template=bucket_template, formation_client=formation_client, stack_name=stack_name)
 
     if stack_id:
-        # return s3_resource.Bucket(bucket_name).arn  # returns a reference to the bucket
         return get_bucket_arn(bucket_name, client=s3_client)
-        # return f"arn:aws:s3:::{bucket_name}"
     return None
 
 
@@ -70,8 +74,8 @@ def create_trigger_relationship_with_queue(bucket_name, queue_arn, queue_url, **
             Bucket=bucket_name,
             NotificationConfiguration=config
         )
-        print(f"Awesome! Your queue will now receive notifications when items are uploaded into '{bucket_name}'.")
+        print(f"[+]Awesome! Your queue will now receive notifications when items are uploaded into '{bucket_name}'.")
         return response
     except Exception as e:
-        print(f"An error occurred while setting up the bucket notification configuration: {e}")
+        print(f"[-]An error occurred while setting up the bucket notification configuration: {e}")
         return None

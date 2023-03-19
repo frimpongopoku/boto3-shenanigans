@@ -10,7 +10,7 @@ def upload_images(bucket_name, **kwargs):
     directory = kwargs.get("directory")
     # Loop through each file in the directory
     for filename in os.listdir(directory):
-        print("Current File: ", filename)
+        print(f"[..]Currently uploading file '{filename}'")
         # Construct the full path to the file
         filepath = os.path.join(directory, filename)
 
@@ -20,4 +20,4 @@ def upload_images(bucket_name, **kwargs):
         # Upload the file to the S3 bucket
         with open(filepath, 'rb') as f:
             client.upload_fileobj(f, bucket_name, filename)
-        print(f"{filename} uploaded to S3")
+        print(f"[+]Uploaded {filename} to S3!")

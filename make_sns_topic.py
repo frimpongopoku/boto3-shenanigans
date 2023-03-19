@@ -18,7 +18,7 @@ def create_sns_topic(topic_name, **kwargs):
     client = kwargs.get("client", create_client("sns"))
     it_exists, arn = topic_exists(topic_name, client)
     if it_exists:
-        print(f"A topic with the name '{arn}' exists, here you go...")
+        print(f"[+]A topic with the name '{arn}' exists, here you go...")
         return arn
     response = client.create_topic(Name=topic_name)
     return response['TopicArn']
@@ -34,6 +34,6 @@ def subscribe_emails_to_topic(email_list, topic_arn, **kwargs):
                 Endpoint=email
             )
         except Exception as e:
-            print("Failed Subscription: ", str(e))
+            print("[-]Failed Subscription: ", str(e))
             return False
     return True

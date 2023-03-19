@@ -21,16 +21,16 @@ def upload_zipped_lambdas(s3_client, bucket_name):
     # Loop through each file in the directory
     try:
         for filename in os.listdir(FOLDER_CONTAINING_ZIPS):
-            print("New Uploading file: ", filename)
+            print("[..]Currently Uploading file: ", filename)
             filepath = os.path.join(FOLDER_CONTAINING_ZIPS, filename)
 
             with open(filepath, 'rb') as f:
                 s3_client.upload_fileobj(f, bucket_name, filename)
 
-            print(f"{filename} uploaded to {bucket_name}")
+            print(f"[+]{filename} uploaded to '{bucket_name}'")
         return True
     except Exception as e:
-        print("Error happened while uploading zips ", str(e))
+        print("[-]Error happened while uploading zips ", str(e))
         return False
 
 
@@ -53,7 +53,7 @@ def generate_lambda_functions(**kwargs):
                                 formation_client=formation_client)
     zips_uploaded = upload_zipped_lambdas(s3_client, U_BUCKET_NAME)
     if not zips_uploaded:
-        print("For some reason we could not upload zipped lambda functions, please check logs...")
+        print("[-]For some reason we could not upload zipped lambda functions, please check logs...")
         return None, None
 
     # Now we create dynamo entry lambda

@@ -19,7 +19,7 @@ def create_lambda_function(**kwargs):
     handler_name = kwargs.get("handler_name")
     it_exists, arn = lambda_function_exists(client=client, function_name=function_name)
     if it_exists:
-        print(f"The function '{function_name}' already exists, so it wont be recreated...")
+        print(f"[+]The function '{function_name}' already exists, so it wont be recreated...")
         return arn
 
     response = client.create_function(
@@ -42,10 +42,9 @@ def create_event_source_mapping(arn, function_name, **kwargs):
     client = kwargs.get("client", create_client("lambda"))
     options = kwargs.get("options",{})
     it_exists = event_source_mapping_exists(arn, function_name, client)
-    print("Here is the ARN", arn)
     if it_exists:
         print(
-            f"The source mapping between function '{function_name}' and queue with arn = '{arn}' already exists :)")
+            f"[+]The source mapping between function '{function_name}' and queue with arn = '{arn}' already exists :)")
         return True
     client.create_event_source_mapping(
         EventSourceArn=arn,
@@ -55,7 +54,7 @@ def create_event_source_mapping(arn, function_name, **kwargs):
         **options
     )
     print(
-        f"Created source mapping between function '{function_name}' and entity with arn = '{arn}'!")
+        f"[+]Created source mapping between function '{function_name}' and entity with arn = '{arn}'!")
     return True
 
 
