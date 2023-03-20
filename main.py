@@ -23,6 +23,16 @@ DIRECTORY = '/Users/PongoALU/Documents/CPD/images'
 # Processes into steps to make the code easy to read
 # @author: Frimpong Opoku Agyemang
 
+def new_step(text):
+    dashes = ""
+    for i in range(len(text)):
+        dashes += "-"
+    print(dashes)
+    print(text)
+    print(dashes)
+
+
+
 def make_s3_bucket():
     template = load_json("templates/create_s3.json")
     return create_bucket_from_template(template, BUCKET_NAME,
@@ -57,31 +67,43 @@ def make_sns_topic_and_subscribe_emails():
 
 def run_all_steps():
     # Step 1 - Generate s3 bucket from template
+    new_step("STEP 1 - MAKE S3 FROM TEMPLATE")
     make_s3_bucket()
     # Step 2 - Create dynamodb table that is going to be used later
+    new_step("STEP 2 - MAKE DYNAMO DB TABLE FROM TEMPLATE")
     table_arn = make_dynamodb_table()
     # Step 3 - Create SQS queue that will be triggered when there is a new upload in the bucket
+    new_step("STEP 3 - MAKE SQS QUEUE")
     queue_arn, queue_url = make_sqs()
     # Step 4 - Setup the relationship between the bucket and the queue here
+    new_step("STEP 4 - MAKE BUCKET NOTIFY QUEUE")
     create_trigger_relationship_with_queue(BUCKET_NAME, queue_arn, queue_url, s3_client=S3, client=SQS)
     # Step 5 - Generate the 2 needed lambda functions
+    new_step("STEP 5 - GENERATE LAMBDA FUNCTIONS")
     generate_lambda_functions(session=SESSION)
     # Step 6 - Setup a relationship between the sqs queue and the lambda function that should be triggered on new entry
+    new_step("STEP 6 - MAKE QUEUE TRIGGER LAMBDA FUNCTION")
     create_lambda_trigger_from_sqs(queue_arn, DYNAMO_ENTRY_FUNCTION_NAME, client=LAMBDA)
     # Step 7 - Enable streaming in dynamodb table
+    new_step("STEP 7 - ENABLE STREAMING ON OUR DYNAMO DB TABLE")
     stream_arn = enable_streaming_on_dyno_table(TABLE_NAME, client=DYNAMO)
     # Step 8 - Now create a relationship between the dynamodb table and the second lambda function so that it can be triggered when new items are entered
+    new_step("STEP 8 - MAKE DYNAMO TABLE INSERTION TRIGGER SECOND LAMBDA")
     setup_relationship_between_dynamodb_table_and_emailing_lambda(stream_arn)
     # Step 9 - Now create an SNS topic and subscribe some emails to it so that we can notify when we find pedestrians
+    new_step("STEP 9 - GENERATE SNS TOPIC & SUBSCRIBE NOTIFIABLE EMAILS")
     make_sns_topic_and_subscribe_emails()
+
     # Now start the application (Uploading Images)...
     # ------------------------------------------------
+    new_step("STEP 10 - NOW UPLOAD IMAGES")
     upload_images(BUCKET_NAME, client=S3, directory=DIRECTORY)
 
 
 def reset_application():
     bucket_emptied = empty_bucket(BUCKET_NAME, S3)
     table_emptied = empty_database_table(TABLE_NAME, DYNAMO)
+    new_step("INITIAL CLEANUP")
 
     if bucket_emptied:
         print(f"[+]Bucket '{BUCKET_NAME}' is emptied....")
