@@ -6,7 +6,7 @@ from make_s3_bucket import create_bucket_from_template
 from utils import create_session, load_json
 import os
 
-SESSION = create_session()
+SESSION = create_session(False)
 resource = SESSION.resource('ec2')
 client = SESSION.client("ec2")
 s3_client = SESSION.client("s3")

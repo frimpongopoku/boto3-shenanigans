@@ -17,7 +17,7 @@ STUDENT_ID = "s2023351"
 LAB_ROLE_ARN = "arn:aws:iam::122802082660:role/LabRole"
 
 
-def create_session(in_deployment=False):
+def create_session(in_deployment=True):
     if in_deployment:
         return boto3.Session(region_name="us-east-1") # Since LabRole will be attached to EC2 instance that the app will run on,only region_name is needed
 
