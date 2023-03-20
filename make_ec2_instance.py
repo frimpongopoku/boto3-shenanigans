@@ -8,36 +8,45 @@ SESSION = create_session()
 EC2_CLIENT = SESSION.client('ec2')
 
 
+# Define a function to check if an EC2 instance with a given name exists
 def instance_exists(name):
+    # Describe instances with a filter based on the given name
     instances = EC2_CLIENT.describe_instances(Filters=[
         {'Name': 'tag:Name', 'Values': [name]}
     ])['Reservations']
+    # Return True and the instances if at least one instance matches the name, otherwise False and instances
     return len(instances) > 0, instances
 
 
 AMI_IMAGE_ID = 'ami-02f3f602d23f1659d'  # Amazon Linux 2023 AMI
-
 DEFAULT_SECURITY_GROUP = "sg-088883dca8b60ae8a"
 
 
 def create_ec2_instance(name):
+    # Check if an EC2 instance with the given name already exists
     it_exists, _instances = instance_exists(name)
+
+    # If the instance exists, print a message and return its information
     if it_exists:
         print(f"Ec2 instance with name '{name}' already exists :)")
         return _instances[0].get("Instances", [])[0]
 
-    vpc_id = EC2_CLIENT.describe_vpcs(Filters=[{'Name': 'isDefault', 'Values': ['true']}])['Vpcs'][0][
-        'VpcId']
-    subnet_id = EC2_CLIENT.describe_subnets(Filters=[{'Name': 'vpc-id', 'Values': [vpc_id]}])['Subnets'][0][
-        'SubnetId']
-    # Create a new instance if it doesn't exist
+    # Retrieve the default VPC's ID
+    vpc_id = EC2_CLIENT.describe_vpcs(Filters=[{'Name': 'isDefault', 'Values': ['true']}])['Vpcs'][0]['VpcId']
+
+    # Retrieve the subnet ID associated with the VPC
+    subnet_id = EC2_CLIENT.describe_subnets(Filters=[{'Name': 'vpc-id', 'Values': [vpc_id]}])['Subnets'][0]['SubnetId']
+
+    # Print a message indicating the creation of the new EC2 instance
     print(f"Currently creating EC2 instance '{name}'...")
+
+    # Create the new EC2 instance with the specified parameters
     instances = EC2_CLIENT.run_instances(
         ImageId=AMI_IMAGE_ID,
         InstanceType='t2.micro',
         MinCount=1,
         MaxCount=1,
-        SecurityGroupIds=[DEFAULT_SECURITY_GROUP],  # change
+        SecurityGroupIds=[DEFAULT_SECURITY_GROUP],
         SubnetId=subnet_id,
         TagSpecifications=[
             {
@@ -51,13 +60,20 @@ def create_ec2_instance(name):
             },
         ]
     )
-    # Retrieve "Instances" and if its not available, provide a fallback empty array
+
+    # Retrieve "Instances" from the response, and if it's not available, provide a fallback empty array
     instances = instances.get("Instances", [])
+
+    # If instances array is not empty, return the first instance's information
     if len(instances):
         return instances[0]
+
+    # If no instances were created, return None
     return None
 
 
+
+# testing.........
 def lets_see_security_groups(client=None):
     client = client or EC2_CLIENT
     response = client.describe_security_groups()
