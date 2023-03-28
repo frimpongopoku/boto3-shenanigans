@@ -20,7 +20,7 @@ def topic_exists(topic_name, client):
 # Define a function to create an SNS topic
 def create_sns_topic(topic_name, **kwargs):
     # Get the SNS client from kwargs or create one
-    client = kwargs.get("client", create_client("sns"))
+    client = kwargs.get("client") or create_client("sns")
     # Check if the topic exists
     it_exists, arn = topic_exists(topic_name, client)
     # If the topic exists, print a message and return its ARN
@@ -36,7 +36,7 @@ def create_sns_topic(topic_name, **kwargs):
 # Define a function to subscribe emails to an SNS topic
 def subscribe_emails_to_topic(email_list, topic_arn, **kwargs):
     # Get the SNS client from kwargs or create one
-    client = kwargs.get("client", create_client("sns"))
+    client = kwargs.get("client") or create_client("sns")
     # Loop through the email list
     for email in email_list:
         try:

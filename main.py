@@ -8,7 +8,7 @@ from make_sqs_queue import create_queue, QUEUE_NAME
 from make_uploads import upload_images
 from utils import create_session, load_json, STUDENT_ID
 
-SESSION = create_session()
+SESSION = create_session(True)
 EC2 = SESSION.client("ec2")
 S3 = SESSION.client("s3")
 LAMBDA = SESSION.client("lambda")
@@ -16,7 +16,7 @@ SNS = SESSION.client("sns")
 DYNAMO = SESSION.client("dynamodb")
 SQS = SESSION.client("sqs")
 CLOUD_FORMATION = SESSION.client("cloudformation")
-DIRECTORY = '/Users/PongoALU/Documents/CPD/images'
+DIRECTORY = './images'
 
 
 # The following functions in this file are just simple "grouping functions" that are used to wrap core
@@ -30,7 +30,6 @@ def new_step(text):
     print(dashes)
     print(text)
     print(dashes)
-
 
 
 def make_s3_bucket():

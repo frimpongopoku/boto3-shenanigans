@@ -9,7 +9,7 @@ load_dotenv()
 
 AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-AWS_REGION = os.getenv("AWS_REGION")
+AWS_REGION = os.getenv("AWS_REGION") or "us-east-1"
 AWS_SESSION_TOKEN = os.getenv("AWS_SESSION_TOKEN")
 BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
@@ -17,9 +17,9 @@ STUDENT_ID = "s2023351"
 LAB_ROLE_ARN = "arn:aws:iam::122802082660:role/LabRole"
 
 
-def create_session(in_deployment=True):
+def create_session(in_deployment=False):
     if in_deployment:
-        return boto3.Session(region_name="us-east-1") # Since LabRole will be attached to EC2 instance that the app will run on,only region_name is needed
+        return boto3.Session(region_name=AWS_REGION) # Since LabRole will be attached to EC2 instance that the app will run on,only region_name is needed
 
     session = boto3.Session(
         aws_access_key_id=AWS_ACCESS_KEY,

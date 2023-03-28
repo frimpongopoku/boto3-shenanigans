@@ -39,7 +39,7 @@ def queue_exists(**kwargs):
 
 def create_queue(name, **kwargs):
     # name = kwargs.get("name", None)
-    client = kwargs.get("client", create_client("sqs"))
+    client = kwargs.get("client") or create_client("sqs")
     it_exists, arn, url = queue_exists(name=name, client=client)
     if it_exists:
         print("[+]Queue already exists, here you go :)")
@@ -53,8 +53,8 @@ def create_queue(name, **kwargs):
 # Define a function that gives an S3 bucket permission to notify an SQS queue
 def give_bucket_permission_to_notify(bucket_name, queue_url, queue_arn, **kwargs):
     # Get the SQS and S3 clients from kwargs, or create new clients if they are not provided
-    client = kwargs.get("client", create_client("sqs"))
-    s3_client = kwargs.get("s3_client", create_client("s3"))
+    client = kwargs.get("client") or create_client("sqs")
+    s3_client = kwargs.get("s3_client") or create_client("s3")
 
     # Define a dictionary that represents the policy to be applied to the SQS queue
     q_policy = {

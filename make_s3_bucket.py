@@ -31,7 +31,7 @@ def empty_bucket(bucket_name, client):
 def get_bucket_arn(bucket_name, **kwargs):
     # Get the S3 and STS clients from kwargs or create them
     client = kwargs.get("client")
-    sts = kwargs.get("sts_client", create_client("sts"))
+    sts = kwargs.get("sts_client") or create_client("sts")
     # Get the bucket location
     response = client.get_bucket_location(Bucket=bucket_name)
     # Get the bucket region, default to 'us-east-1' if not present
@@ -61,7 +61,7 @@ def create_bucket_from_template(bucket_template, bucket_name, **kwargs):
     stack_name = f"pongos-new-s3-stack-{str(int(time.time()))}-{STUDENT_ID}"
     # Get the CloudFormation and S3 clients from kwargs or create them
     formation_client = kwargs.get("formation_client")
-    s3_client = kwargs.get("client", create_client("s3"))
+    s3_client = kwargs.get("client") or create_client("s3")
 
     # Check if the bucket exists
     it_exists, bucket = bucket_exists(bucket_name, s3_client)
@@ -92,7 +92,7 @@ def create_trigger_relationship_with_queue(bucket_name, queue_arn, queue_url, **
     :return:
     """
     # Get the S3 and SQS clients from kwargs or create them
-    s3_client = kwargs.get("s3_client", create_client("s3"))
+    s3_client = kwargs.get("s3_client") or create_client("s3")
     sqs_client = kwargs.get("client")
     # Give the bucket permission to notify the queue
     give_bucket_permission_to_notify(bucket_name, queue_url, queue_arn, client=sqs_client, s3_client=s3_client)
@@ -111,5 +111,3 @@ def create_trigger_relationship_with_queue(bucket_name, queue_arn, queue_url, **
         # Print an error message if an exception occurs
         print(f"[-]An error occurred while setting up the bucket notification configuration: {e}")
         return None
-
-

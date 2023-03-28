@@ -3,7 +3,7 @@ import boto3
 from lambdas.index import FOLDER_CONTAINING_ZIPS, U_BUCKET_NAME, TEMPLATE_PATH
 from make_ec2_instance import create_ec2_instance
 from make_s3_bucket import create_bucket_from_template
-from utils import create_session, load_json
+from utils import create_session, load_json, STUDENT_ID
 import os
 
 SESSION = create_session(False)
@@ -44,8 +44,8 @@ def make_key_pair(name):
     return key_pair
 
 
-SECURITY_GROUP_NAME = "group_for_testing_deployment"
-EC2_NAME = "elite_another_instance_to_test_theory"
+SECURITY_GROUP_NAME = "solid_security_group"
+EC2_NAME = f"pongos_ec2_instance_{STUDENT_ID}"
 make_key_pair(PEM_NAME)
 
 
@@ -64,6 +64,7 @@ def deploy():
                                           sudo yum update
                                           sudo yum -y install python3-pip awscli
                                           sudo pip install boto3
+                                          sudo pip install python-dotenv
                                          '''})
 
     if instance:

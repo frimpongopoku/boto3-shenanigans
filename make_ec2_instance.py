@@ -21,14 +21,13 @@ def create_security_group(name, client, resource_client):
     response = client.describe_security_groups(Filters=[{'Name': 'group-name', 'Values': [name]}])
 
     if not response['SecurityGroups']:
-        security_group = resource_client.create_security_group(GroupName=name)
+        security_group = resource_client.create_security_group(GroupName=name, Description=name)
         # Add rules to security group
         security_group.authorize_ingress(IpProtocol='tcp', FromPort=22, ToPort=22, CidrIp='0.0.0.0/0')  # SSH access
         security_group.authorize_ingress(IpProtocol='tcp', FromPort=80, ToPort=80, CidrIp='0.0.0.0/0')  # HTTP access
     else:
         security_group = resource_client.SecurityGroup(response['SecurityGroups'][0]['GroupId'])
-
-        return security_group
+    return security_group
 
 
 # Define a function to check if an EC2 instance with a given name exists

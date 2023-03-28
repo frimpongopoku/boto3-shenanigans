@@ -71,7 +71,7 @@ def table_exists(name, client):
 # Define a function to create a DynamoDB table from a CloudFormation template
 def create_table_from_template(table_template, table_name, **kwargs):
     # Get the DynamoDB client or create a new one
-    client = kwargs.get("client", create_client("dynamodb"))
+    client = kwargs.get("client") or create_client("dynamodb")
     # Get the CloudFormation client from kwargs
     formation_client = kwargs.get("formation_client")
 
@@ -115,7 +115,7 @@ def stream_is_enabled(table_name, client):
 # Define a function to enable streaming on a DynamoDB table
 def enable_streaming_on_dyno_table(table_name, **kwargs):
     # Get the DynamoDB client or create a new one
-    client = kwargs.get("client", create_client("dynamodb"))
+    client = kwargs.get("client") or create_client("dynamodb")
     # Check if the table exists
     exist, table_name = table_exists(table_name, client)
     # If the table does not exist, print a message and return None

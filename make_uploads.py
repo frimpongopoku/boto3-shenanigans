@@ -6,7 +6,7 @@ SECONDS_TO_WAIT = 30  # TODO: change this to 30 before submission
 
 
 def upload_images(bucket_name, **kwargs):
-    client = kwargs.get("client", create_client("s3"))
+    client = kwargs.get("client") or create_client("s3")
     directory = kwargs.get("directory")
     # Loop through each file in the directory
     for filename in os.listdir(directory):
