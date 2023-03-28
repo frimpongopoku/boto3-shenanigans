@@ -8,7 +8,7 @@ from make_sqs_queue import create_queue, QUEUE_NAME
 from make_uploads import upload_images
 from utils import create_session, load_json, STUDENT_ID
 
-SESSION = create_session(True)
+SESSION = create_session()
 EC2 = SESSION.client("ec2")
 S3 = SESSION.client("s3")
 LAMBDA = SESSION.client("lambda")

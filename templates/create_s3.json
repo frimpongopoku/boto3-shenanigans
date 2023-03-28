@@ -3,7 +3,7 @@
     "MyS3Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": "pongoss3buckets2023351"
+        "BucketName": "pongoscws3buckets2023351"
       }
     }
   }

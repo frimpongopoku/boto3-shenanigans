@@ -7,11 +7,11 @@ U_BUCKET_NAME = "pongosutilitybuckets2023351"
 TEMPLATE_PATH = "templates/create_my_utility_bucket.json"  # Relative to root folder
 FOLDER_CONTAINING_ZIPS = "./../zips"  # Relative to deployment folder
 
-DYNAMO_ENTRY_FUNCTION_NAME = "functionToCreateItemsInDynamoDB"
+DYNAMO_ENTRY_FUNCTION_NAME = "createItemsInDatabase"
 DYNAMO_LAMBDA_ZIPPED_FILE_NAME = "dynamo_entry_function.py.zip"
 DYNAMO_HANDLER_NAME = "dynamo_entry_function.lambda_handler"
 
-EMAILING_FUNCTION_NAME = "functionToEmailIfPassengerExists"
+EMAILING_FUNCTION_NAME = "sendEmailIfPassengerExists"
 EMAILING_LAMBDA_ZIPPED_FILE_NAME = "emailing_function.py.zip"
 EMAILING_LAMBDA_HANDLER_NAME = "emailing_function.lambda_handler"
 

@@ -4,7 +4,7 @@ import time
 from make_sqs_queue import give_bucket_permission_to_notify
 from utils import create_client, create_resource, create_stack, STUDENT_ID
 
-BUCKET_NAME = "pongoss3buckets2023351"
+BUCKET_NAME = "pongoscws3buckets2023351"
 
 
 # Define a function to delete all objects in an S3 bucket

@@ -3,7 +3,7 @@ import time
 
 from utils import STUDENT_ID, create_session, create_client
 
-QUEUE_NAME = f"pongos_sqs_queue_{STUDENT_ID}"
+QUEUE_NAME = f"pongos_cw_sqs_queue_{STUDENT_ID}"
 
 
 # Define a function that retrieves the ARN associated with an SQS queue, given its URL
