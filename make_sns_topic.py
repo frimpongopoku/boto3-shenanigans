@@ -2,7 +2,7 @@ from utils import create_client
 
 TOPIC_NAME = "PEDESTRIAN"  # NB: Change this in emailing lambda too if ever changed here
 
-EMAIL_LIST = ["f.agyemang@alustudent.com"]  # TODO: Before submission, remember to add the email "cpd.aws@example.com"
+EMAIL_LIST = ["f.agyemang@alustudent.com", "cpd.aws@example.com"]
 
 
 # Define a function to check if an SNS topic exists
